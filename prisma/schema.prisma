@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Workout {
+  id        String            @id @default(uuid())
+  name      String
+  exercises WorkoutExercise[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model WorkoutExercise {
+  id         String       @id @default(uuid())
+  exerciseId String
+  name       String
+  notes      String?
+  workoutId  String
+  workout    Workout      @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  sets       WorkoutSet[]
+  createdAt  DateTime     @default(now())
+
+  @@index([workoutId])
+}
+
+model WorkoutSet {
+  id                String          @id @default(uuid())
+  reps              Int
+  weight            Float
+  workoutExerciseId String
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+  createdAt         DateTime        @default(now())
+
+  @@index([workoutExerciseId])
+}
+
+model Meal {
+  id        String     @id @default(uuid())
+  name      String
+  eatenAt   DateTime   @default(now())
+  foods     FoodItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model FoodItem {
+  id          String @id @default(uuid())
+  name        String
+  servingSize Float
+  calories    Float
+  protein     Float
+  carbs       Float
+  fat         Float
+  mealId      String
+  meal        Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+  @@index([mealId])
+}
+
+model Goal {
+  id             String   @id @default(uuid())
+  type           String   @default("weight")
+  targetWeight   Float
+  targetDate     DateTime
+  startingWeight Float?
+  createdAt      DateTime @default(now())
+}
+
+model WeightEntry {
+  id        String   @id @default(uuid())
+  weight    Float
+  loggedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+model TrainingPlan {
+  id              String   @id @default(uuid())
+  goal            String
+  experienceLevel String
+  daysPerWeek     Int
+  plan            String[]
+  createdAt       DateTime @default(now())
+}

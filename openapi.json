@@ -1,0 +1,569 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "AppController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/workouts": {
+      "post": {
+        "operationId": "WorkoutsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkoutDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Workouts"
+        ]
+      },
+      "get": {
+        "operationId": "WorkoutsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Workouts"
+        ]
+      }
+    },
+    "/api/workouts/{id}": {
+      "get": {
+        "operationId": "WorkoutsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Workouts"
+        ]
+      }
+    },
+    "/api/workouts/{id}/exercises": {
+      "post": {
+        "operationId": "WorkoutsController_addExercise",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddExerciseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Workouts"
+        ]
+      }
+    },
+    "/api/workouts/{id}/exercises/{exerciseId}/sets": {
+      "post": {
+        "operationId": "WorkoutsController_addSet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "exerciseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Workouts"
+        ]
+      }
+    },
+    "/api/nutrition/meals": {
+      "post": {
+        "operationId": "NutritionController_createMeal",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMealDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Nutrition"
+        ]
+      },
+      "get": {
+        "operationId": "NutritionController_findMeals",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Nutrition"
+        ]
+      }
+    },
+    "/api/nutrition/meals/{id}/foods": {
+      "post": {
+        "operationId": "NutritionController_addFood",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFoodDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Nutrition"
+        ]
+      }
+    },
+    "/api/nutrition/daily-totals": {
+      "get": {
+        "operationId": "NutritionController_dailyTotals",
+        "parameters": [
+          {
+            "name": "date",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Nutrition"
+        ]
+      }
+    },
+    "/api/goals": {
+      "post": {
+        "operationId": "GoalsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWeightGoalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Goals"
+        ]
+      },
+      "get": {
+        "operationId": "GoalsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Goals"
+        ]
+      }
+    },
+    "/api/progress/weights": {
+      "post": {
+        "operationId": "ProgressController_logWeight",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogWeightDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Progress"
+        ]
+      },
+      "get": {
+        "operationId": "ProgressController_findWeights",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Progress"
+        ]
+      }
+    },
+    "/api/reports/weekly": {
+      "get": {
+        "operationId": "ReportsController_weeklyReport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/api/ai-plans": {
+      "post": {
+        "operationId": "AiPlansController_generate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateTrainingPlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "AiPlans"
+        ]
+      },
+      "get": {
+        "operationId": "AiPlansController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "AiPlans"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Fit Forge API",
+    "description": "API for workout tracking, nutrition, goals, progress, reports, and training plans.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "CreateWorkoutDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Upper Body Strength",
+            "maxLength": 120
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "AddExerciseDto": {
+        "type": "object",
+        "properties": {
+          "exerciseId": {
+            "type": "string",
+            "example": "barbell-bench-press"
+          },
+          "name": {
+            "type": "string",
+            "example": "Barbell Bench Press",
+            "maxLength": 120
+          },
+          "notes": {
+            "type": "string",
+            "example": "Use a controlled tempo.",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "exerciseId",
+          "name"
+        ]
+      },
+      "AddSetDto": {
+        "type": "object",
+        "properties": {
+          "reps": {
+            "type": "number",
+            "example": 8,
+            "minimum": 1
+          },
+          "weight": {
+            "type": "number",
+            "example": 60,
+            "minimum": 0,
+            "description": "Weight in the user's chosen unit."
+          }
+        },
+        "required": [
+          "reps",
+          "weight"
+        ]
+      },
+      "CreateMealDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Breakfast",
+            "maxLength": 120
+          },
+          "eatenAt": {
+            "type": "string",
+            "example": "2026-06-21T07:30:00.000Z",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "AddFoodDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Greek yogurt",
+            "maxLength": 120
+          },
+          "servingSize": {
+            "type": "number",
+            "example": 170,
+            "minimum": 0,
+            "description": "Serving size in grams."
+          },
+          "calories": {
+            "type": "number",
+            "example": 130,
+            "minimum": 0
+          },
+          "protein": {
+            "type": "number",
+            "example": 17,
+            "minimum": 0
+          },
+          "carbs": {
+            "type": "number",
+            "example": 8,
+            "minimum": 0
+          },
+          "fat": {
+            "type": "number",
+            "example": 3,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "name",
+          "servingSize",
+          "calories",
+          "protein",
+          "carbs",
+          "fat"
+        ]
+      },
+      "CreateWeightGoalDto": {
+        "type": "object",
+        "properties": {
+          "targetWeight": {
+            "type": "number",
+            "example": 70,
+            "minimum": 1,
+            "description": "Target body weight."
+          },
+          "targetDate": {
+            "type": "string",
+            "example": "2026-12-31",
+            "format": "date"
+          },
+          "startingWeight": {
+            "type": "number",
+            "example": 78,
+            "minimum": 1,
+            "description": "Starting body weight."
+          }
+        },
+        "required": [
+          "targetWeight",
+          "targetDate"
+        ]
+      },
+      "LogWeightDto": {
+        "type": "object",
+        "properties": {
+          "weight": {
+            "type": "number",
+            "example": 76.5,
+            "minimum": 1
+          },
+          "loggedAt": {
+            "type": "string",
+            "example": "2026-06-21T07:30:00.000Z",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "weight"
+        ]
+      },
+      "GenerateTrainingPlanDto": {
+        "type": "object",
+        "properties": {
+          "goal": {
+            "type": "string",
+            "example": "Build muscle"
+          },
+          "experienceLevel": {
+            "type": "string",
+            "example": "beginner",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ]
+          },
+          "daysPerWeek": {
+            "type": "number",
+            "example": 4,
+            "minimum": 1,
+            "maximum": 7
+          }
+        },
+        "required": [
+          "goal",
+          "experienceLevel",
+          "daysPerWeek"
+        ]
+      }
+    }
+  }
+}
