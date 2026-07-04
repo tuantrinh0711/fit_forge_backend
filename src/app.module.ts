@@ -6,6 +6,7 @@ import { NutritionModule } from "./nutrition/nutrition.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ProgressModule } from "./progress/progress.module";
 import { ReportsModule } from "./reports/reports.module";
+import { SearchModule } from "./search/search.module";
 import { WorkoutsModule } from "./workouts/workouts.module";
 
 @Module({
@@ -17,6 +18,7 @@ import { WorkoutsModule } from "./workouts/workouts.module";
     ProgressModule,
     ReportsModule,
     AiPlansModule,
+    SearchModule,
   ],
   controllers: [AppController],
 })
