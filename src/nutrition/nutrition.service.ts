@@ -66,6 +66,20 @@ export class NutritionService {
     return this.calculateTotals(foods);
   }
 
+  async removeMeal(id: string): Promise<void> {
+    const result = await this.prisma.meal.deleteMany({ where: { id } });
+    if (result.count === 0)
+      throw new NotFoundException("Meal " + id + " was not found");
+  }
+
+  async removeFood(mealId: string, foodId: string): Promise<void> {
+    const result = await this.prisma.foodItem.deleteMany({
+      where: { id: foodId, mealId },
+    });
+    if (result.count === 0)
+      throw new NotFoundException("Food item " + foodId + " was not found");
+  }
+
   private async findMealWithTotals(id: string) {
     const meal = await this.prisma.meal.findUnique({
       where: { id },

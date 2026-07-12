@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { GenerateTrainingPlanDto } from "./dto/generate-training-plan.dto";
 
@@ -25,6 +25,12 @@ export class AiPlansService {
         plan: templates.slice(0, dto.daysPerWeek),
       },
     });
+  }
+
+  async remove(id: string): Promise<void> {
+    const result = await this.prisma.trainingPlan.deleteMany({ where: { id } });
+    if (result.count === 0)
+      throw new NotFoundException("Training plan " + id + " was not found");
   }
 
   findAll() {

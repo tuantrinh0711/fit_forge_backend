@@ -92,6 +92,32 @@ export class WorkoutsService {
     };
   }
 
+  async remove(id: string): Promise<void> {
+    const result = await this.prisma.workout.deleteMany({ where: { id } });
+    if (result.count === 0)
+      throw new NotFoundException("Workout " + id + " was not found");
+  }
+
+  async removeExercise(workoutId: string, exerciseId: string): Promise<void> {
+    const result = await this.prisma.workoutExercise.deleteMany({
+      where: { id: exerciseId, workoutId },
+    });
+    if (result.count === 0)
+      throw new NotFoundException("Exercise " + exerciseId + " was not found");
+  }
+
+  async removeSet(
+    workoutId: string,
+    exerciseId: string,
+    setId: string,
+  ): Promise<void> {
+    const result = await this.prisma.workoutSet.deleteMany({
+      where: { id: setId, workoutExercise: { id: exerciseId, workoutId } },
+    });
+    if (result.count === 0)
+      throw new NotFoundException("Set " + setId + " was not found");
+  }
+
   getSummary(workout: WorkoutWithDetails | Workout) {
     if (!("exercises" in workout)) {
       return {

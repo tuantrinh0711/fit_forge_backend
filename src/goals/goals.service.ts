@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { Goal } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateWeightGoalDto } from "./dto/create-weight-goal.dto";
@@ -22,6 +22,12 @@ export class GoalsService {
     return this.prisma.goal.findMany({
       orderBy: { createdAt: "desc" },
     });
+  }
+
+  async remove(id: string): Promise<void> {
+    const result = await this.prisma.goal.deleteMany({ where: { id } });
+    if (result.count === 0)
+      throw new NotFoundException("Goal " + id + " was not found");
   }
 
   getCompletionPercentage(goal: Goal, currentWeight?: number): number {

@@ -157,6 +157,32 @@ As a fitness user, I want to search workouts, exercises, meals, food items, goal
 
 ---
 
+# Delete Records
+
+## Delete Fitness Data
+
+**User Story**
+
+As a fitness user, I want to delete records I no longer need so that my history, summaries, and reports remain accurate.
+
+**Acceptance Criteria**
+
+* Given a workout, exercise, set, meal, food item, goal, weight entry, or training plan exists
+* When I choose to delete it and confirm the destructive action
+* Then the record should be permanently removed
+* And the API should return no content for a successful deletion
+* And lists, totals, charts, search results, and reports should no longer include the deleted record
+* When I delete a workout
+* Then its exercises and sets should also be deleted
+* When I delete a meal
+* Then its food items should also be deleted
+* When a record does not exist or does not belong to the parent resource in the request
+* Then the API should return a not-found response without deleting another record
+* When deletion fails
+* Then the record should remain visible and I should be able to retry
+
+---
+
 # Analytics & Reporting
 
 ## Generate Weekly Report

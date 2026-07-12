@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from "@nestjs/common";
 import { LogWeightDto } from "./dto/log-weight.dto";
 import { ProgressService } from "./progress.service";
 
@@ -14,5 +23,11 @@ export class ProgressController {
   @Get("weights")
   findWeights() {
     return this.progressService.findWeights();
+  }
+
+  @Delete("weights/:id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeWeight(@Param("id") id: string) {
+    return this.progressService.removeWeight(id);
   }
 }

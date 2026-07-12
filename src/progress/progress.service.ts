@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { LogWeightDto } from "./dto/log-weight.dto";
 
@@ -19,6 +19,12 @@ export class ProgressService {
     return this.prisma.weightEntry.findMany({
       orderBy: { loggedAt: "asc" },
     });
+  }
+
+  async removeWeight(id: string): Promise<void> {
+    const result = await this.prisma.weightEntry.deleteMany({ where: { id } });
+    if (result.count === 0)
+      throw new NotFoundException("Weight entry " + id + " was not found");
   }
 
   latestWeight() {

@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from "@nestjs/common";
 import { AddExerciseDto } from "./dto/add-exercise.dto";
 import { AddSetDto } from "./dto/add-set.dto";
 import { CreateWorkoutDto } from "./dto/create-workout.dto";
@@ -40,5 +49,30 @@ export class WorkoutsController {
     @Body() dto: AddSetDto,
   ) {
     return this.workoutsService.addSet(id, exerciseId, dto);
+  }
+
+  @Delete(":id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param("id") id: string) {
+    return this.workoutsService.remove(id);
+  }
+
+  @Delete(":id/exercises/:exerciseId")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeExercise(
+    @Param("id") id: string,
+    @Param("exerciseId") exerciseId: string,
+  ) {
+    return this.workoutsService.removeExercise(id, exerciseId);
+  }
+
+  @Delete(":id/exercises/:exerciseId/sets/:setId")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeSet(
+    @Param("id") id: string,
+    @Param("exerciseId") exerciseId: string,
+    @Param("setId") setId: string,
+  ) {
+    return this.workoutsService.removeSet(id, exerciseId, setId);
   }
 }

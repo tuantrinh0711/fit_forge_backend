@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from "@nestjs/common";
 import { CreateWeightGoalDto } from "./dto/create-weight-goal.dto";
 import { GoalsService } from "./goals.service";
 
@@ -14,5 +23,11 @@ export class GoalsController {
   @Get()
   findAll() {
     return this.goalsService.findAll();
+  }
+
+  @Delete(":id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param("id") id: string) {
+    return this.goalsService.remove(id);
   }
 }
