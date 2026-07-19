@@ -7,12 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String    @id @default(uuid())
+  googleId  String    @unique
+  name      String?
+  email     String    @unique
+  workouts  Workout[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("users")
+}
+
 model Workout {
   id        String            @id @default(uuid())
   name      String
+  userId    String?
+  user      User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   exercises WorkoutExercise[]
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
+
+  @@index([userId])
+  @@map("workouts")
 }
 
 model WorkoutExercise {
@@ -26,6 +43,7 @@ model WorkoutExercise {
   createdAt  DateTime     @default(now())
 
   @@index([workoutId])
+  @@map("workout_exercises")
 }
 
 model WorkoutSet {
@@ -37,6 +55,7 @@ model WorkoutSet {
   createdAt         DateTime        @default(now())
 
   @@index([workoutExerciseId])
+  @@map("workout_sets")
 }
 
 model Meal {
@@ -46,6 +65,8 @@ model Meal {
   foods     FoodItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
+  @@map("meals")
 }
 
 model FoodItem {
@@ -60,6 +81,7 @@ model FoodItem {
   meal        Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade)
 
   @@index([mealId])
+  @@map("food_items")
 }
 
 model Goal {
@@ -69,6 +91,8 @@ model Goal {
   targetDate     DateTime
   startingWeight Float?
   createdAt      DateTime @default(now())
+
+  @@map("goals")
 }
 
 model WeightEntry {
@@ -76,6 +100,8 @@ model WeightEntry {
   weight    Float
   loggedAt  DateTime @default(now())
   createdAt DateTime @default(now())
+
+  @@map("weight_entries")
 }
 
 model TrainingPlan {
@@ -85,4 +111,6 @@ model TrainingPlan {
   daysPerWeek     Int
   plan            String[]
   createdAt       DateTime @default(now())
+
+  @@map("training_plans")
 }

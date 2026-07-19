@@ -35,6 +35,14 @@ docker compose up -d postgres
 npm run db:migrate -- --name init
 ```
 
+### Database migration conventions
+
+- Physical PostgreSQL table names must be plural, lowercase `snake_case` (for example, `users`, `workouts`, and `workout_exercises`).
+- Keep Prisma model names singular and PascalCase, and map them to physical table names with `@@map("plural_snake_case_name")`.
+- Before applying a migration, inspect the generated `migration.sql` and confirm it follows the naming convention.
+- When renaming an existing table, use `ALTER TABLE ... RENAME TO ...` and rename related constraints and indexes instead of dropping and recreating the table, so existing data is preserved and Prisma schema drift is avoided.
+- After applying a migration, run `npx prisma validate`, `npx prisma migrate status`, and `npx prisma migrate diff --from-schema-datasource prisma/schema.prisma --to-schema-datamodel prisma/schema.prisma --exit-code`.
+
 - Useful Prisma commands:
 
 ```bash

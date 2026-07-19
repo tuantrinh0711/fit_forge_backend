@@ -23,6 +23,7 @@ export class WorkoutsService {
     return this.prisma.workout.create({
       data: {
         name: dto.name,
+        userId: dto.userId,
       },
       include: workoutInclude,
     });
