@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { AiPlansModule } from "./ai-plans/ai-plans.module";
 import { AppController } from "./app.controller";
+import { AuthModule } from "./auth/auth.module";
 import { GoalsModule } from "./goals/goals.module";
 import { NutritionModule } from "./nutrition/nutrition.module";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -12,6 +13,7 @@ import { WorkoutsModule } from "./workouts/workouts.module";
 @Module({
   imports: [
     PrismaModule,
+    AuthModule,
     WorkoutsModule,
     NutritionModule,
     GoalsModule,
