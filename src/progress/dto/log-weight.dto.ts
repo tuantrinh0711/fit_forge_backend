@@ -1,7 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsDateString, IsNumber, IsOptional, Min } from "class-validator";
+import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 
 export class LogWeightDto {
+  @ApiProperty({ example: "user-1234" })
+  @IsString()
+  @IsNotEmpty()
+  userId!: string;
+
   @ApiProperty({ example: 76.5, minimum: 1 })
   @IsNumber()
   @Min(1)

@@ -8,25 +8,29 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  passwordHash String
-  name         String?
-  email        String    @unique
-  workouts     Workout[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id              String          @id @default(uuid())
+  passwordHash    String
+  name            String?
+  email           String          @unique
+  workouts        Workout[]
+  meals           Meal[]
+  goals           Goal[]
+  weightEntries   WeightEntry[]
+  trainingPlans   TrainingPlan[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
   @@map("users")
 }
 
 model Workout {
-  id        String            @id @default(uuid())
+  id        String   @id @default(uuid())
   name      String
-  userId    String?
-  user      User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   exercises WorkoutExercise[]
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@map("workouts")
@@ -60,12 +64,15 @@ model WorkoutSet {
 
 model Meal {
   id        String     @id @default(uuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String
   eatenAt   DateTime   @default(now())
   foods     FoodItem[]
   createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  updatedAt DateTime  @updatedAt
 
+  @@index([userId])
   @@map("meals")
 }
 
@@ -86,31 +93,40 @@ model FoodItem {
 
 model Goal {
   id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   type           String   @default("weight")
   targetWeight   Float
   targetDate     DateTime
   startingWeight Float?
   createdAt      DateTime @default(now())
 
+  @@index([userId])
   @@map("goals")
 }
 
 model WeightEntry {
   id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   weight    Float
   loggedAt  DateTime @default(now())
   createdAt DateTime @default(now())
 
+  @@index([userId])
   @@map("weight_entries")
 }
 
 model TrainingPlan {
   id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   goal            String
   experienceLevel String
   daysPerWeek     Int
   plan            String[]
   createdAt       DateTime @default(now())
 
+  @@index([userId])
   @@map("training_plans")
 }

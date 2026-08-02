@@ -18,6 +18,7 @@ export class NutritionService {
   createMeal(dto: CreateMealDto) {
     return this.prisma.meal.create({
       data: {
+        userId: dto.userId,
         name: dto.name,
         eatenAt: dto.eatenAt ? new Date(dto.eatenAt) : undefined,
       },

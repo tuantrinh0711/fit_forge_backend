@@ -9,6 +9,7 @@ export class ProgressService {
   logWeight(dto: LogWeightDto) {
     return this.prisma.weightEntry.create({
       data: {
+        userId: dto.userId,
         weight: dto.weight,
         loggedAt: dto.loggedAt ? new Date(dto.loggedAt) : undefined,
       },

@@ -19,6 +19,7 @@ export class AiPlansService {
 
     return this.prisma.trainingPlan.create({
       data: {
+        userId: dto.userId,
         goal: dto.goal,
         experienceLevel: dto.experienceLevel,
         daysPerWeek: dto.daysPerWeek,

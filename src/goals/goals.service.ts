@@ -10,6 +10,7 @@ export class GoalsService {
   createWeightGoal(dto: CreateWeightGoalDto) {
     return this.prisma.goal.create({
       data: {
+        userId: dto.userId,
         type: "weight",
         targetWeight: dto.targetWeight,
         targetDate: new Date(dto.targetDate),

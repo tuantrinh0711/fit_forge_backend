@@ -1,7 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsDateString, IsNumber, IsOptional, Min } from "class-validator";
+import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 
 export class CreateWeightGoalDto {
+  @ApiProperty({ example: "user-1234" })
+  @IsString()
+  @IsNotEmpty()
+  userId!: string;
+
   @ApiProperty({ example: 70, minimum: 1, description: "Target body weight." })
   @IsNumber()
   @Min(1)

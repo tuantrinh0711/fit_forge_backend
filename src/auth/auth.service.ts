@@ -1,15 +1,15 @@
 import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException,
 } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import {
-  randomBytes,
-  scrypt as scryptCallback,
-  timingSafeEqual,
+    randomBytes,
+    scrypt as scryptCallback,
+    timingSafeEqual,
 } from "node:crypto";
 import { promisify } from "node:util";
 import { PrismaService } from "../prisma/prisma.service";
@@ -72,7 +72,10 @@ export class AuthService {
       throw new NotFoundException("User not found");
     }
 
-    const isPasswordValid = await this.verifyPassword(dto.password, user.passwordHash);
+    const isPasswordValid = await this.verifyPassword(
+      dto.password,
+      user.passwordHash,
+    );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException("Invalid credentials");

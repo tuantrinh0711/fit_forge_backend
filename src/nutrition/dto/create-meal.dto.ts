@@ -8,6 +8,11 @@ import {
 } from "class-validator";
 
 export class CreateMealDto {
+  @ApiProperty({ example: "user-1234" })
+  @IsString()
+  @IsNotEmpty()
+  userId!: string;
+
   @ApiProperty({ example: "Breakfast", maxLength: 120 })
   @IsString()
   @IsNotEmpty()

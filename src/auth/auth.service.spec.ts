@@ -20,7 +20,9 @@ describe("AuthService.signIn", () => {
   });
 
   it("returns the user when email and password are correct", async () => {
-    const passwordHash = await (service as any).hashPassword("correct-password");
+    const passwordHash = await (service as any).hashPassword(
+      "correct-password",
+    );
     prisma.user.findUnique.mockResolvedValue({
       id: "user-1",
       email: "alex@example.com",

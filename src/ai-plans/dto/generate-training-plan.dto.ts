@@ -2,6 +2,11 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsIn, IsInt, IsNotEmpty, IsString, Max, Min } from "class-validator";
 
 export class GenerateTrainingPlanDto {
+  @ApiProperty({ example: "user-1234" })
+  @IsString()
+  @IsNotEmpty()
+  userId!: string;
+
   @ApiProperty({ example: "Build muscle" })
   @IsString()
   @IsNotEmpty()
