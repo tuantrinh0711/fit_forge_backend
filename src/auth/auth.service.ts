@@ -2,11 +2,18 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import { randomBytes, scrypt as scryptCallback } from "node:crypto";
+import {
+  randomBytes,
+  scrypt as scryptCallback,
+  timingSafeEqual,
+} from "node:crypto";
 import { promisify } from "node:util";
 import { PrismaService } from "../prisma/prisma.service";
+import { SignInDto } from "./dto/sign-in.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 
 const scrypt = promisify(scryptCallback);
@@ -42,7 +49,7 @@ export class AuthService {
         },
       });
 
-      return this.toUserResponse(user);
+      return this.toAuthResponse(user);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -55,6 +62,25 @@ export class AuthService {
     }
   }
 
+  async signIn(dto: SignInDto) {
+    const email = dto.email.trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    const isPasswordValid = await this.verifyPassword(dto.password, user.passwordHash);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException("Invalid credentials");
+    }
+
+    return this.toAuthResponse(user);
+  }
+
   private async hashPassword(password: string): Promise<string> {
     const salt = randomBytes(16);
     const derivedKey = (await scrypt(password, salt, 64)) as Buffer;
@@ -62,19 +88,45 @@ export class AuthService {
     return `${salt.toString("hex")}:${derivedKey.toString("hex")}`;
   }
 
-  private toUserResponse(user: {
+  private async verifyPassword(
+    password: string,
+    storedHash: string,
+  ): Promise<boolean> {
+    const [saltHex, hashHex] = storedHash.split(":");
+
+    if (!saltHex || !hashHex) {
+      return false;
+    }
+
+    const salt = Buffer.from(saltHex, "hex");
+    const derivedKey = (await scrypt(password, salt, 64)) as Buffer;
+    const storedKey = Buffer.from(hashHex, "hex");
+
+    if (storedKey.length !== derivedKey.length) {
+      return false;
+    }
+
+    return timingSafeEqual(storedKey, derivedKey);
+  }
+
+  private toAuthResponse(user: {
     id: string;
     email: string;
     name: string | null;
-    createdAt: Date;
-    updatedAt: Date;
   }) {
+    const token = `token-${randomBytes(16).toString("hex")}`;
+
     return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      idToken: token,
+      accessToken: token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        givenName: null,
+        familyName: null,
+        photo: null,
+      },
     };
   }
 }
