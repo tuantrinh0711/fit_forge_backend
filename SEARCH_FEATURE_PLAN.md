@@ -65,7 +65,7 @@ Create a new `SearchModule` with:
 
 Register `SearchModule` in `src/app.module.ts`.
 
-## Search Scope
+## Search Scope 
 
 Initial searchable fields:
 

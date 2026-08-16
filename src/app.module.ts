@@ -9,6 +9,7 @@ import { ProgressModule } from "./progress/progress.module";
 import { ReportsModule } from "./reports/reports.module";
 import { SearchModule } from "./search/search.module";
 import { WorkoutsModule } from "./workouts/workouts.module";
+import { ExerciseTemplatesModule } from "./exercise-templates/exercise-templates.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { WorkoutsModule } from "./workouts/workouts.module";
     ReportsModule,
     AiPlansModule,
     SearchModule,
+    ExerciseTemplatesModule,
   ],
   controllers: [AppController],
 })

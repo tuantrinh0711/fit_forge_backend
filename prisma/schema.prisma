@@ -130,3 +130,11 @@ model TrainingPlan {
   @@index([userId])
   @@map("training_plans")
 }
+
+model ExerciseTemplate {
+  id   Int    @id @default(autoincrement())
+  name String
+  tags Json   @db.JsonB
+
+  @@map("exercises_templates")
+}

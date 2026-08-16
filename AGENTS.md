@@ -52,6 +52,13 @@ npm run db:push
 npm run db:studio
 ```
 
+Seeding exercise templates (examples):
+
+```bash
+# Load the SQL-based seed (idempotent inserts)
+npm run db:seed:exercises-templates
+```
+
 ## Testing instructions
 
 - Run unit tests with:

@@ -62,6 +62,13 @@ npm run db:push
 npm run db:studio
 ```
 
+Seeding helpers (exercise templates):
+
+```bash
+# seed from the SQL file or CSV (main script uses the 100-row CSV)
+npm run db:seed:exercises-templates
+```
+
 ## Main Endpoints
 
 - `GET /api/health`
