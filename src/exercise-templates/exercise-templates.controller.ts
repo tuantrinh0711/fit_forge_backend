@@ -8,6 +8,12 @@ export class ExerciseTemplatesController {
 
   @Get()
   findAll(@Query() query: QueryExerciseTemplatesDto) {
-    return this.svc.findAll({ q: query.q, tags: query.tags, sort: query.sort });
+    return this.svc.findAll({
+      q: query.q,
+      tags: query.tags,
+      sort: query.sort,
+      limit: query.limit,
+      offset: query.offset,
+    });
   }
 }

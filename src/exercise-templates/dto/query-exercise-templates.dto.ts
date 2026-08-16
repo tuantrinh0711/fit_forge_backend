@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsIn, IsOptional, IsString } from "class-validator";
+import { IsIn, IsOptional, IsString, IsInt, Min } from "class-validator";
+import { Type } from "class-transformer";
 
 export class QueryExerciseTemplatesDto {
   @ApiPropertyOptional({
@@ -20,4 +21,18 @@ export class QueryExerciseTemplatesDto {
   @IsString()
   @IsIn(["asc", "desc"])
   sort?: "asc" | "desc";
+
+  @ApiPropertyOptional({ description: "Limit number of results", example: 20 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  limit?: number;
+
+  @ApiPropertyOptional({ description: "Offset for pagination", example: 0 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  offset?: number;
 }

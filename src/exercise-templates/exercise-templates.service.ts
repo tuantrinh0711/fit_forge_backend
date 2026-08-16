@@ -5,8 +5,14 @@ import { PrismaService } from "../prisma/prisma.service";
 export class ExerciseTemplatesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(options: { q?: string; tags?: string; sort?: "asc" | "desc" }) {
-    const { q, tags, sort } = options || {};
+  async findAll(options: {
+    q?: string;
+    tags?: string;
+    sort?: "asc" | "desc";
+    limit?: number;
+    offset?: number;
+  }) {
+    const { q, tags, sort, limit, offset } = options || {};
 
     const where: any = {};
 
@@ -14,10 +20,14 @@ export class ExerciseTemplatesService {
       where.name = { contains: q, mode: "insensitive" };
     }
 
-    const items = await this.prisma.exerciseTemplate.findMany({
+    const prismaParams: any = {
       where,
       orderBy: sort ? { name: sort } : undefined,
-    });
+      skip: offset ?? undefined,
+      take: limit ?? undefined,
+    };
+
+    const items = await this.prisma.exerciseTemplate.findMany(prismaParams);
 
     if (tags) {
       const tagsArr = tags.split(",").map((t) => t.trim()).filter(Boolean);
