@@ -64,6 +64,9 @@ export class SearchService {
     if (!type || type === "exercise") {
       searches.push(this.searchExercises(query));
     }
+    if (!type || type === "exercise_template") {
+      searches.push(this.searchTemplates(query));
+    }
     if (!type || type === "meal") {
       searches.push(this.searchMeals(query));
     }
@@ -123,6 +126,22 @@ export class SearchService {
         workoutId: exercise.workoutId,
         workoutName: exercise.workout.name,
       },
+    }));
+  }
+
+  private async searchTemplates(query: string): Promise<SearchResult[]> {
+    const templates = await this.prisma.exerciseTemplate.findMany({
+      where: { name: textFilter(query) },
+      orderBy: { id: "desc" },
+    });
+
+    return templates.map((t) => ({
+      id: String(t.id),
+      type: "exercise_template",
+      title: t.name,
+      summary: "Exercise template",
+      date: new Date(),
+      metadata: { tags: t.tags as unknown },
     }));
   }
 

@@ -11,6 +11,7 @@ describe("SearchService", () => {
     goal: { findMany: jest.fn().mockResolvedValue([]) },
     weightEntry: { findMany: jest.fn().mockResolvedValue([]) },
     trainingPlan: { findMany: jest.fn().mockResolvedValue([]) },
+    exerciseTemplate: { findMany: jest.fn().mockResolvedValue([]) },
   });
 
   it("searches workouts by partial name", async () => {
@@ -170,6 +171,31 @@ describe("SearchService", () => {
       id: "plan-1",
       type: "training_plan",
       title: "Hypertrophy training plan",
+    });
+  });
+
+  it("searches exercise templates by name", async () => {
+    const prisma = createPrismaMock();
+    prisma.exerciseTemplate.findMany.mockResolvedValue([
+      { id: 1, name: "Bench Press", tags: [] },
+    ]);
+    const service = new SearchService(prisma as never);
+
+    const result = await service.search({
+      q: "bench",
+      type: "exercise_template",
+      limit: 20,
+      offset: 0,
+    });
+
+    expect(prisma.exerciseTemplate.findMany).toHaveBeenCalledWith({
+      where: { name: { contains: "bench", mode: "insensitive" } },
+      orderBy: { id: "desc" },
+    });
+    expect(result.total).toBe(1);
+    expect(result.results[0]).toMatchObject({
+      type: "exercise_template",
+      title: "Bench Press",
     });
   });
 

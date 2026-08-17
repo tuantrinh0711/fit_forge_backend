@@ -18,6 +18,7 @@ export const searchResultTypes = [
   "goal",
   "weight",
   "training_plan",
+  "exercise_template",
 ] as const;
 
 export type SearchResultType = (typeof searchResultTypes)[number];
