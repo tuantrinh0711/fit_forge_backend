@@ -8,29 +8,29 @@ datasource db {
 }
 
 model User {
-  id              String          @id @default(uuid())
-  passwordHash    String
-  name            String?
-  email           String          @unique
-  workouts        Workout[]
-  meals           Meal[]
-  goals           Goal[]
-  weightEntries   WeightEntry[]
-  trainingPlans   TrainingPlan[]
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  id            String         @id @default(uuid())
+  passwordHash  String
+  name          String?
+  email         String         @unique
+  workouts      Workout[]
+  meals         Meal[]
+  goals         Goal[]
+  weightEntries WeightEntry[]
+  trainingPlans TrainingPlan[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@map("users")
 }
 
 model Workout {
-  id        String   @id @default(uuid())
+  id        String            @id @default(uuid())
   name      String
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   exercises WorkoutExercise[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 
   @@index([userId])
   @@map("workouts")
@@ -46,7 +46,7 @@ model WorkoutExercise {
   sets       WorkoutSet[]
   createdAt  DateTime     @default(now())
 
-  exercise   Exercise     @relation(fields: [exerciseId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
 
   @@index([workoutId])
   @@map("workout_exercises")
@@ -72,7 +72,7 @@ model Meal {
   eatenAt   DateTime   @default(now())
   foods     FoodItem[]
   createdAt DateTime   @default(now())
-  updatedAt DateTime  @updatedAt
+  updatedAt DateTime   @updatedAt
 
   @@index([userId])
   @@map("meals")
@@ -137,6 +137,8 @@ model Exercise {
   id               Int               @id @default(autoincrement())
   name             String
   tags             Json              @db.JsonB
+  workoutExercises WorkoutExercise[]
+
   workoutExercises WorkoutExercise[]
 
   @@map("exercises")
