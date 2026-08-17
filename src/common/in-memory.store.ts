@@ -9,7 +9,7 @@ export type WorkoutSet = {
 
 export type WorkoutExercise = {
   id: string;
-  exerciseId: string;
+  exerciseId: number;
   name: string;
   notes?: string;
   sets: WorkoutSet[];

@@ -27,7 +27,7 @@ export class ExerciseTemplatesService {
       take: limit ?? undefined,
     };
 
-    const items = await this.prisma.exerciseTemplate.findMany(prismaParams);
+    const items = await this.prisma.exercise.findMany(prismaParams);
 
     if (tags) {
       const tagsArr = tags.split(",").map((t) => t.trim()).filter(Boolean);

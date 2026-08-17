@@ -103,17 +103,17 @@ export class SearchService {
   }
 
   private async searchExercises(query: string): Promise<SearchResult[]> {
-    const exercises = await this.prisma.workoutExercise.findMany({
+    const exercises = await (this.prisma as any).workoutExercise.findMany({
       where: {
         OR: [
           { name: textFilter(query) },
-          { exerciseId: textFilter(query) },
           { notes: textFilter(query) },
+          { exercise: { name: textFilter(query) } },
         ],
       },
-      include: { workout: true },
+      include: { workout: true, exercise: true },
       orderBy: { createdAt: "desc" },
-    });
+    } as any);
 
     return exercises.map((exercise) => ({
       id: exercise.id,
@@ -123,6 +123,7 @@ export class SearchService {
       date: exercise.createdAt,
       metadata: {
         exerciseId: exercise.exerciseId,
+        exerciseName: exercise.exercise?.name,
         workoutId: exercise.workoutId,
         workoutName: exercise.workout.name,
       },
@@ -130,10 +131,10 @@ export class SearchService {
   }
 
   private async searchTemplates(query: string): Promise<SearchResult[]> {
-    const templates = await this.prisma.exerciseTemplate.findMany({
+    const templates = await (this.prisma as any).exercise.findMany({
       where: { name: textFilter(query) },
       orderBy: { id: "desc" },
-    });
+    } as any);
 
     return templates.map((t) => ({
       id: String(t.id),

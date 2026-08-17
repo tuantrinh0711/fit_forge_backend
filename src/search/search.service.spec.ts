@@ -11,7 +11,7 @@ describe("SearchService", () => {
     goal: { findMany: jest.fn().mockResolvedValue([]) },
     weightEntry: { findMany: jest.fn().mockResolvedValue([]) },
     trainingPlan: { findMany: jest.fn().mockResolvedValue([]) },
-    exerciseTemplate: { findMany: jest.fn().mockResolvedValue([]) },
+    exercise: { findMany: jest.fn().mockResolvedValue([]) },
   });
 
   it("searches workouts by partial name", async () => {
@@ -40,11 +40,12 @@ describe("SearchService", () => {
     prisma.workoutExercise.findMany.mockResolvedValue([
       {
         id: "exercise-1",
-        exerciseId: "bench-press",
+        exerciseId: 1,
         name: "Bench Press",
         notes: "Heavy top set",
         workoutId: "workout-1",
         workout: { id: "workout-1", name: "Push Day" },
+        exercise: { id: 1, name: "Bench Press", tags: [] },
         createdAt: now,
       },
     ]);
@@ -61,18 +62,18 @@ describe("SearchService", () => {
       where: {
         OR: [
           { name: { contains: "bench", mode: "insensitive" } },
-          { exerciseId: { contains: "bench", mode: "insensitive" } },
           { notes: { contains: "bench", mode: "insensitive" } },
+          { exercise: { name: { contains: "bench", mode: "insensitive" } } },
         ],
       },
-      include: { workout: true },
+      include: { workout: true, exercise: true },
       orderBy: { createdAt: "desc" },
     });
     expect(prisma.workout.findMany).not.toHaveBeenCalled();
     expect(result.results[0]).toMatchObject({
       type: "exercise",
       title: "Bench Press",
-      metadata: { workoutId: "workout-1" },
+      metadata: { workoutId: "workout-1", exerciseId: 1 },
     });
   });
 
@@ -176,7 +177,7 @@ describe("SearchService", () => {
 
   it("searches exercise templates by name", async () => {
     const prisma = createPrismaMock();
-    prisma.exerciseTemplate.findMany.mockResolvedValue([
+    prisma.exercise.findMany.mockResolvedValue([
       { id: 1, name: "Bench Press", tags: [] },
     ]);
     const service = new SearchService(prisma as never);
@@ -188,7 +189,7 @@ describe("SearchService", () => {
       offset: 0,
     });
 
-    expect(prisma.exerciseTemplate.findMany).toHaveBeenCalledWith({
+    expect(prisma.exercise.findMany).toHaveBeenCalledWith({
       where: { name: { contains: "bench", mode: "insensitive" } },
       orderBy: { id: "desc" },
     });

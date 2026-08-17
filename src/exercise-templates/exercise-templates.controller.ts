@@ -2,7 +2,7 @@ import { Controller, Get, Query } from "@nestjs/common";
 import { ExerciseTemplatesService } from "./exercise-templates.service";
 import { QueryExerciseTemplatesDto } from "./dto/query-exercise-templates.dto";
 
-@Controller("exercises-templates")
+@Controller("exercises")
 export class ExerciseTemplatesController {
   constructor(private readonly svc: ExerciseTemplatesService) {}
 

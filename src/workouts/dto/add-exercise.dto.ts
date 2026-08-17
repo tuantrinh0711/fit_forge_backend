@@ -1,11 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, MaxLength, IsInt } from "class-validator";
+import { Type } from "class-transformer";
 
 export class AddExerciseDto {
-  @ApiProperty({ example: "barbell-bench-press" })
-  @IsString()
+  @ApiProperty({ example: 1 })
+  @Type(() => Number)
+  @IsInt()
   @IsNotEmpty()
-  exerciseId!: string;
+  exerciseId!: number;
 
   @ApiProperty({ example: "Barbell Bench Press", maxLength: 120 })
   @IsString()

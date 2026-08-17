@@ -38,13 +38,15 @@ model Workout {
 
 model WorkoutExercise {
   id         String       @id @default(uuid())
-  exerciseId String
+  exerciseId Int
   name       String
   notes      String?
   workoutId  String
   workout    Workout      @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   sets       WorkoutSet[]
   createdAt  DateTime     @default(now())
+
+  exercise   Exercise     @relation(fields: [exerciseId], references: [id])
 
   @@index([workoutId])
   @@map("workout_exercises")
@@ -131,10 +133,10 @@ model TrainingPlan {
   @@map("training_plans")
 }
 
-model ExerciseTemplate {
+model Exercise {
   id   Int    @id @default(autoincrement())
   name String
   tags Json   @db.JsonB
 
-  @@map("exercises_templates")
+  @@map("exercises")
 }
