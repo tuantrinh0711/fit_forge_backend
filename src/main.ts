@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
@@ -6,16 +7,28 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const allowedOrigins = new Set([
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:3001",
     "https://output-lemon-limb.ngrok-free.dev",
   ]);
+  const isLocalDevelopmentOrigin = (origin: string) => {
+    try {
+      const url = new URL(origin);
+      return (
+        (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
+        (url.protocol === "http:" || url.protocol === "https:")
+      );
+    } catch {
+      return false;
+    }
+  };
 
   app.enableCors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.has(origin) || origin.endsWith(".ngrok-free.dev")) {
+      if (
+        !origin ||
+        allowedOrigins.has(origin) ||
+        origin.endsWith(".ngrok-free.dev") ||
+        isLocalDevelopmentOrigin(origin)
+      ) {
         callback(null, true);
         return;
       }
@@ -24,7 +37,14 @@ async function bootstrap() {
     },
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Accept",
+      "Origin",
+      "X-Requested-With",
+      "ngrok-skip-browser-warning",
+    ],
   });
   app.setGlobalPrefix("api");
   app.useGlobalPipes(

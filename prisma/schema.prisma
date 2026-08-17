@@ -134,9 +134,10 @@ model TrainingPlan {
 }
 
 model Exercise {
-  id   Int    @id @default(autoincrement())
-  name String
-  tags Json   @db.JsonB
+  id               Int               @id @default(autoincrement())
+  name             String
+  tags             Json              @db.JsonB
+  workoutExercises WorkoutExercise[]
 
   @@map("exercises")
 }
