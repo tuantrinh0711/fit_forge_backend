@@ -8,6 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const allowedOrigins = new Set([
     "https://output-lemon-limb.ngrok-free.dev",
+    "http://192.168.1.71:8081",
   ]);
   const isLocalDevelopmentOrigin = (origin: string) => {
     try {
