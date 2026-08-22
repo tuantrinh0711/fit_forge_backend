@@ -4,7 +4,7 @@ import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 
-async function bootstrap() {
+async function createApp() {
   const app = await NestFactory.create(AppModule);
   const allowedOrigins = new Set([
     "https://output-lemon-limb.ngrok-free.dev",
@@ -37,7 +37,7 @@ async function bootstrap() {
       callback(new Error("CORS blocked for origin: " + origin));
     },
     credentials: true,
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",
       "Authorization",
@@ -68,8 +68,21 @@ async function bootstrap() {
     jsonDocumentUrl: "api/docs-json",
   });
 
-  const port = process.env.PORT ?? 3000;
+  return app;
+}
+
+async function bootstrap() {
+  const app = await createApp();
+  const port = Number(process.env.PORT ?? 3000);
   await app.listen(port);
 }
 
-void bootstrap();
+if (!process.env.VERCEL) {
+  void bootstrap();
+}
+
+export default async function handler(req: any, res: any) {
+  const app = await createApp();
+  await app.init();
+  return app.getHttpAdapter().getInstance()(req, res);
+}
