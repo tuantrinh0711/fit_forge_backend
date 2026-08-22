@@ -4,7 +4,6 @@ import { NestFactory } from "@nestjs/core";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import express from "express";
-import serverless from "serverless-http";
 import { AppModule } from "./app.module";
 
 const expressApp = express();
@@ -86,14 +85,19 @@ if (!process.env.VERCEL) {
   void bootstrap();
 }
 
-let cachedHandler: ReturnType<typeof serverless> | undefined;
+let appInitPromise: Promise<void> | undefined;
 
 export default async function handler(req: any, res: any) {
-  if (!cachedHandler) {
-    const app = await createApp();
-    await app.init();
-    cachedHandler = serverless(expressApp);
+  if (!appInitPromise) {
+    appInitPromise = createApp()
+      .then((app) => app.init())
+      .then(() => undefined)
+      .catch((error) => {
+        appInitPromise = undefined;
+        throw error;
+      });
   }
 
-  return cachedHandler(req, res);
+  await appInitPromise;
+  return expressApp(req, res);
 }
