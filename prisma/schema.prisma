@@ -139,7 +139,5 @@ model Exercise {
   tags             Json              @db.JsonB
   workoutExercises WorkoutExercise[]
 
-  workoutExercises WorkoutExercise[]
-
   @@map("exercises")
 }
