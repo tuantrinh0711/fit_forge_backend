@@ -1,11 +1,16 @@
 import "dotenv/config";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { ExpressAdapter } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import express from "express";
+import serverless from "serverless-http";
 import { AppModule } from "./app.module";
 
+const expressApp = express();
+
 async function createApp() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
   const allowedOrigins = new Set([
     "https://output-lemon-limb.ngrok-free.dev",
     "http://192.168.1.71:8081",
@@ -81,8 +86,14 @@ if (!process.env.VERCEL) {
   void bootstrap();
 }
 
+let cachedHandler: ReturnType<typeof serverless> | undefined;
+
 export default async function handler(req: any, res: any) {
-  const app = await createApp();
-  await app.init();
-  return app.getHttpAdapter().getInstance()(req, res);
+  if (!cachedHandler) {
+    const app = await createApp();
+    await app.init();
+    cachedHandler = serverless(expressApp);
+  }
+
+  return cachedHandler(req, res);
 }
