@@ -20,6 +20,19 @@ export class ExerciseTemplatesService {
       where.name = { contains: q, mode: "insensitive" };
     }
 
+    if (tags) {
+      const tagsArr = tags
+        .split(",")
+        .map((tag) => tag.trim().toLowerCase())
+        .filter(Boolean);
+
+      if (tagsArr.length > 0) {
+        where.OR = tagsArr.map((tag) => ({
+          tags: { array_contains: [tag] },
+        }));
+      }
+    }
+
     const prismaParams: any = {
       where,
       orderBy: sort ? { name: sort } : undefined,
@@ -27,20 +40,6 @@ export class ExerciseTemplatesService {
       take: limit ?? undefined,
     };
 
-    const items = await this.prisma.exercise.findMany(prismaParams);
-
-    if (tags) {
-      const tagsArr = tags.split(",").map((t) => t.trim()).filter(Boolean);
-
-      if (tagsArr.length > 0) {
-        return items.filter((it) => {
-          const itTags = it.tags as any;
-          if (!Array.isArray(itTags)) return false;
-          return tagsArr.some((tag) => itTags.includes(tag));
-        });
-      }
-    }
-
-    return items;
+    return this.prisma.exercise.findMany(prismaParams);
   }
 }
