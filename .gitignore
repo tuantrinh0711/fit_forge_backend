@@ -11,3 +11,5 @@ pnpm-debug.log*
 # local Codex runtime files
 .codex/local-environment/
 .codex/
+.vercel
+.env*
