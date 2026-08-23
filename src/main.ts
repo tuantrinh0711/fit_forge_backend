@@ -7,6 +7,7 @@ import express from "express";
 import { AppModule } from "./app.module";
 
 const expressApp = express();
+let serverPromise: Promise<unknown> | undefined;
 
 async function createApp() {
   const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
@@ -60,17 +61,19 @@ async function createApp() {
     }),
   );
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle("Fit Forge API")
-    .setDescription(
-      "API for workout tracking, nutrition, goals, progress, reports, and training plans.",
-    )
-    .setVersion("1.0")
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup("api/docs", app, document, {
-    jsonDocumentUrl: "api/docs-json",
-  });
+  if (!process.env.VERCEL) {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle("Fit Forge API")
+      .setDescription(
+        "API for workout tracking, nutrition, goals, progress, reports, and training plans.",
+      )
+      .setVersion("1.0")
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup("api/docs", app, document, {
+      jsonDocumentUrl: "api/docs-json",
+    });
+  }
 
   return app;
 }
@@ -85,19 +88,22 @@ if (!process.env.VERCEL) {
   void bootstrap();
 }
 
-let appInitPromise: Promise<void> | undefined;
-
 export default async function handler(req: any, res: any) {
-  if (!appInitPromise) {
-    appInitPromise = createApp()
+  if (req.url === "/favicon.ico") {
+    res.statusCode = 204;
+    res.end();
+    return;
+  }
+
+  if (!serverPromise) {
+    serverPromise = createApp()
       .then((app) => app.init())
-      .then(() => undefined)
       .catch((error) => {
-        appInitPromise = undefined;
+        serverPromise = undefined;
         throw error;
       });
   }
 
-  await appInitPromise;
+  await serverPromise;
   return expressApp(req, res);
 }
