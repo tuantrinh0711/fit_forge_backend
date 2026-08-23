@@ -7,10 +7,21 @@ NestJS backend for workout, nutrition, goal, progress, reporting, and AI workout
 ```bash
 npm install
 npm run db:generate
+npm run db:migrate -- --name init
 npm run start:dev
 ```
 
 The API defaults to `http://localhost:3000/api`.
+
+## Vercel deployment
+
+Set the `DATABASE_URL` environment variable in Vercel to your Supabase Postgres URL:
+
+```env
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.cxjzpmotrlzsupkbqxqe.supabase.co:5432/postgres?sslmode=require"
+```
+
+Replace `[YOUR-PASSWORD]` with the real Supabase password. The app now runs Prisma migrations before startup, so the server will not boot until the database schema is ready.
 
 ## API Documentation
 

@@ -10,6 +10,12 @@
 npm run db:generate
 ```
 
+- Run Prisma migrations before starting the server:
+
+```bash
+npm run db:migrate -- --name init
+```
+
 - Start the development server with:
 
 ```bash
@@ -17,6 +23,12 @@ npm run start:dev
 ```
 
 - The API defaults to `http://localhost:3000/api`.
+
+- For Vercel deployment, set the environment variable to:
+
+```env
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.cxjzpmotrlzsupkbqxqe.supabase.co:5432/postgres?sslmode=require"
+```
 - The local PostgreSQL default from the README is:
 
 ```env
