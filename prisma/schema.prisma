@@ -18,6 +18,7 @@ model User {
   goals         Goal[]
   weightEntries WeightEntry[]
   trainingPlans TrainingPlan[]
+  passwordResetTokens PasswordResetToken[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -134,6 +135,19 @@ model TrainingPlan {
   @@map("training_plans")
 }
 
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
 model Exercise {
   id               Int               @id @default(autoincrement())
   name             String
