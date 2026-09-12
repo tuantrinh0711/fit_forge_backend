@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Load environment variables from .env (simple parser)
-if [ -f ".env" ]; then
+# Load environment variables from .env only when DATABASE_URL was not supplied.
+if [ -z "${DATABASE_URL:-}" ] && [ -f ".env" ]; then
   export $(grep -v '^#' .env | xargs)
 fi
 

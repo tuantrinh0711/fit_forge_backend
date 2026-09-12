@@ -6,14 +6,19 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import express from "express";
 import { AppModule } from "./app.module";
 
-const expressApp = express();
+export const expressApp = express();
 let serverPromise: Promise<unknown> | undefined;
 
-async function createApp() {
+export async function createApp() {
   const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
+  const configuredOrigins = (process.env.CORS_ORIGINS ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
   const allowedOrigins = new Set([
     "https://output-lemon-limb.ngrok-free.dev",
     "http://192.168.1.71:8081",
+    ...configuredOrigins,
   ]);
   const isLocalDevelopmentOrigin = (origin: string) => {
     try {
@@ -84,7 +89,7 @@ async function bootstrap() {
   await app.listen(port);
 }
 
-if (!process.env.VERCEL) {
+if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
   void bootstrap();
 }
 

@@ -13,6 +13,43 @@ npm run start:dev
 
 The API defaults to `http://localhost:3000/api`.
 
+## AWS Lambda staging
+
+The staging deployment uses AWS Lambda with an API Gateway HTTP API and keeps PostgreSQL on Supabase. Use the Supabase shared pooler because it is IPv4-compatible on the Free plan:
+
+```env
+DATABASE_URL="postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@[POOLER-HOST]:6543/postgres?pgbouncer=true&connection_limit=1&sslmode=require"
+DIRECT_URL="postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@[POOLER-HOST]:5432/postgres?sslmode=require"
+```
+
+Install the AWS SAM CLI and AWS CLI, then configure AWS credentials. Store the staging URLs in SSM Parameter Store:
+
+```bash
+aws ssm put-parameter \
+  --name /fit-forge/staging/DATABASE_URL \
+  --type SecureString \
+  --value "$DATABASE_URL" \
+  --overwrite
+
+aws ssm put-parameter \
+  --name /fit-forge/staging/DIRECT_URL \
+  --type SecureString \
+  --value "$DIRECT_URL" \
+  --overwrite
+```
+
+Build and deploy from the repository root:
+
+```bash
+npm run db:generate
+npm run build
+npx prisma migrate deploy
+sam build
+sam deploy --guided
+```
+
+During the guided deployment, use `fit-forge-staging` as the stack name, keep the default SSM parameter path, and set `CorsOrigins` to the frontend staging URL. Do not attach the Lambda function to a VPC unless it must access private AWS resources; a VPC-connected Lambda needs a NAT gateway for outbound access to Supabase.
+
 ## Vercel deployment
 
 Set the `DATABASE_URL` environment variable in Vercel to your Supabase Postgres URL:
