@@ -1,9 +1,15 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { Workout } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { AddExerciseDto } from "./dto/add-exercise.dto";
 import { AddSetDto } from "./dto/add-set.dto";
 import { CreateWorkoutDto } from "./dto/create-workout.dto";
+import { UpdateSetDto } from "./dto/update-set.dto";
 
 const workoutInclude = {
   exercises: {
@@ -117,6 +123,41 @@ export class WorkoutsService {
     });
     if (result.count === 0)
       throw new NotFoundException("Set " + setId + " was not found");
+  }
+
+  async updateSet(
+    userId: string | undefined,
+    workoutId: string,
+    exerciseId: string,
+    setId: string,
+    dto: UpdateSetDto,
+  ) {
+    if (!userId)
+      throw new UnauthorizedException("An authenticated user is required");
+    const workout = await this.prisma.workout.findUnique({
+      where: { id: workoutId },
+      select: { userId: true },
+    });
+    if (!workout)
+      throw new NotFoundException(`Workout ${workoutId} was not found`);
+    if (workout.userId !== userId)
+      throw new ForbiddenException("You do not own this workout");
+    const exercise = await this.prisma.workoutExercise.findFirst({
+      where: { id: exerciseId, workoutId },
+      select: { id: true },
+    });
+    if (!exercise)
+      throw new NotFoundException(`Exercise ${exerciseId} was not found`);
+    const set = await this.prisma.workoutSet.findFirst({
+      where: { id: setId, workoutExerciseId: exerciseId },
+      select: { id: true },
+    });
+    if (!set) throw new NotFoundException(`Set ${setId} was not found`);
+    await this.prisma.workoutSet.update({
+      where: { id: setId },
+      data: { reps: dto.reps, weight: dto.weight },
+    });
+    return this.findOne(workoutId);
   }
 
   getSummary(workout: WorkoutWithDetails | Workout) {

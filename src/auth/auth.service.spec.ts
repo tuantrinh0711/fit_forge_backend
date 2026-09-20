@@ -10,6 +10,7 @@ describe("AuthService.signIn", () => {
   };
 
   beforeEach(() => {
+    process.env.AUTH_SECRET = "test-auth-secret";
     prisma = {
       user: {
         findUnique: jest.fn(),

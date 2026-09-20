@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import { createHash, randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { PrismaService } from "../prisma/prisma.service";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
@@ -16,6 +16,7 @@ import { SignUpDto } from "./dto/sign-up.dto";
 
 const scrypt = promisify(scryptCallback);
 const RESET_TOKEN_TTL_MS = 1000 * 60 * 60;
+const ACCESS_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 @Injectable()
 export class AuthService {
@@ -177,7 +178,7 @@ export class AuthService {
   }
 
   private toAuthResponse(user: { id: string; email: string; name: string | null }) {
-    const token = `token-${randomBytes(16).toString("hex")}`;
+    const token = this.createAccessToken(user.id);
     return {
       idToken: token,
       accessToken: token,
@@ -190,5 +191,46 @@ export class AuthService {
         photo: null,
       },
     };
+  }
+
+  verifyAccessToken(token: string): string | undefined {
+    const [encodedPayload, signature] = token.split(".");
+    if (!encodedPayload || !signature) return undefined;
+
+    const expectedSignature = createHmac("sha256", this.accessTokenSecret())
+      .update(encodedPayload)
+      .digest("base64url");
+    if (signature.length !== expectedSignature.length) return undefined;
+    if (!timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
+      return undefined;
+    }
+
+    try {
+      const payload = JSON.parse(Buffer.from(encodedPayload, "base64url").toString("utf8")) as {
+        sub?: unknown;
+        exp?: unknown;
+      };
+      if (typeof payload.sub !== "string" || typeof payload.exp !== "number") return undefined;
+      if (payload.exp <= Math.floor(Date.now() / 1000)) return undefined;
+      return payload.sub;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private createAccessToken(userId: string) {
+    const encodedPayload = Buffer.from(
+      JSON.stringify({ sub: userId, exp: Math.floor(Date.now() / 1000) + ACCESS_TOKEN_TTL_SECONDS }),
+    ).toString("base64url");
+    const signature = createHmac("sha256", this.accessTokenSecret())
+      .update(encodedPayload)
+      .digest("base64url");
+    return `${encodedPayload}.${signature}`;
+  }
+
+  private accessTokenSecret() {
+    const secret = process.env.AUTH_SECRET;
+    if (!secret) throw new Error("AUTH_SECRET must be configured");
+    return secret;
   }
 }

@@ -10,9 +10,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "App"
-        ]
+        "tags": ["App"]
       }
     },
     "/api/workouts": {
@@ -34,9 +32,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Workouts"
-        ]
+        "tags": ["Workouts"]
       },
       "get": {
         "operationId": "WorkoutsController_findAll",
@@ -46,9 +42,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Workouts"
-        ]
+        "tags": ["Workouts"]
       }
     },
     "/api/workouts/{id}": {
@@ -69,9 +63,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Workouts"
-        ]
+        "tags": ["Workouts"]
       }
     },
     "/api/workouts/{id}/exercises": {
@@ -102,9 +94,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Workouts"
-        ]
+        "tags": ["Workouts"]
       }
     },
     "/api/workouts/{id}/exercises/{exerciseId}/sets": {
@@ -143,9 +133,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Workouts"
-        ]
+        "tags": ["Workouts"]
       }
     },
     "/api/nutrition/meals": {
@@ -167,9 +155,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Nutrition"
-        ]
+        "tags": ["Nutrition"]
       },
       "get": {
         "operationId": "NutritionController_findMeals",
@@ -179,9 +165,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Nutrition"
-        ]
+        "tags": ["Nutrition"]
       }
     },
     "/api/nutrition/meals/{id}/foods": {
@@ -212,9 +196,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Nutrition"
-        ]
+        "tags": ["Nutrition"]
       }
     },
     "/api/nutrition/daily-totals": {
@@ -235,9 +217,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Nutrition"
-        ]
+        "tags": ["Nutrition"]
       }
     },
     "/api/goals": {
@@ -259,9 +239,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Goals"
-        ]
+        "tags": ["Goals"]
       },
       "get": {
         "operationId": "GoalsController_findAll",
@@ -271,9 +249,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Goals"
-        ]
+        "tags": ["Goals"]
       }
     },
     "/api/progress/weights": {
@@ -295,9 +271,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Progress"
-        ]
+        "tags": ["Progress"]
       },
       "get": {
         "operationId": "ProgressController_findWeights",
@@ -307,9 +281,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Progress"
-        ]
+        "tags": ["Progress"]
       }
     },
     "/api/reports/weekly": {
@@ -321,9 +293,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Reports"
-        ]
+        "tags": ["Reports"]
       }
     },
     "/api/ai-plans": {
@@ -345,9 +315,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "AiPlans"
-        ]
+        "tags": ["AiPlans"]
       },
       "get": {
         "operationId": "AiPlansController_findAll",
@@ -357,9 +325,63 @@
             "description": ""
           }
         },
-        "tags": [
-          "AiPlans"
-        ]
+        "tags": ["AiPlans"]
+      }
+    },
+    "/api/workouts/{id}/exercises/{exerciseId}/sets/{setId}": {
+      "patch": {
+        "operationId": "WorkoutsController_updateSet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "exerciseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "setId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated workout detail"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Workout, exercise, or set not found"
+          }
+        },
+        "tags": ["Workouts"]
       }
     }
   },
@@ -382,9 +404,7 @@
             "maxLength": 120
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "AddExerciseDto": {
         "type": "object",
@@ -404,10 +424,7 @@
             "maxLength": 500
           }
         },
-        "required": [
-          "exerciseId",
-          "name"
-        ]
+        "required": ["exerciseId", "name"]
       },
       "AddSetDto": {
         "type": "object",
@@ -424,10 +441,7 @@
             "description": "Weight in the user's chosen unit."
           }
         },
-        "required": [
-          "reps",
-          "weight"
-        ]
+        "required": ["reps", "weight"]
       },
       "CreateMealDto": {
         "type": "object",
@@ -443,9 +457,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "AddFoodDto": {
         "type": "object",
@@ -512,10 +524,7 @@
             "description": "Starting body weight."
           }
         },
-        "required": [
-          "targetWeight",
-          "targetDate"
-        ]
+        "required": ["targetWeight", "targetDate"]
       },
       "LogWeightDto": {
         "type": "object",
@@ -531,9 +540,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "weight"
-        ]
+        "required": ["weight"]
       },
       "GenerateTrainingPlanDto": {
         "type": "object",
@@ -545,11 +552,7 @@
           "experienceLevel": {
             "type": "string",
             "example": "beginner",
-            "enum": [
-              "beginner",
-              "intermediate",
-              "advanced"
-            ]
+            "enum": ["beginner", "intermediate", "advanced"]
           },
           "daysPerWeek": {
             "type": "number",
@@ -558,11 +561,25 @@
             "maximum": 7
           }
         },
-        "required": [
-          "goal",
-          "experienceLevel",
-          "daysPerWeek"
-        ]
+        "required": ["goal", "experienceLevel", "daysPerWeek"]
+      },
+      "UpdateSetDto": {
+        "type": "object",
+        "properties": {
+          "reps": {
+            "type": "integer",
+            "example": 12,
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "weight": {
+            "type": "number",
+            "example": 55,
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "required": ["reps", "weight"]
       }
     }
   }

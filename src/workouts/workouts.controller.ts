@@ -7,11 +7,17 @@ import {
   HttpStatus,
   Param,
   Post,
+  Patch,
+  Req,
+  UseGuards,
 } from "@nestjs/common";
 import { AddExerciseDto } from "./dto/add-exercise.dto";
+import { Request } from "express";
 import { AddSetDto } from "./dto/add-set.dto";
 import { CreateWorkoutDto } from "./dto/create-workout.dto";
+import { UpdateSetDto } from "./dto/update-set.dto";
 import { WorkoutsService } from "./workouts.service";
+import { AuthGuard } from "../auth/auth.guard";
 
 @Controller("workouts")
 export class WorkoutsController {
@@ -49,6 +55,25 @@ export class WorkoutsController {
     @Body() dto: AddSetDto,
   ) {
     return this.workoutsService.addSet(id, exerciseId, dto);
+  }
+
+  @Patch(":id/exercises/:exerciseId/sets/:setId")
+  @UseGuards(AuthGuard)
+  updateSet(
+    @Param("id") workoutId: string,
+    @Param("exerciseId") exerciseId: string,
+    @Param("setId") setId: string,
+    @Body() dto: UpdateSetDto,
+    @Req() request: Request & { user?: { id?: string; userId?: string } },
+  ) {
+    const userId = request.user?.id ?? request.user?.userId;
+    return this.workoutsService.updateSet(
+      userId,
+      workoutId,
+      exerciseId,
+      setId,
+      dto,
+    );
   }
 
   @Delete(":id")
