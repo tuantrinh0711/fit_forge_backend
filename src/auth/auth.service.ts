@@ -109,6 +109,12 @@ export class AuthService {
       throw new BadRequestException("Invalid or expired reset token");
     }
 
+    if (await this.verifyPassword(dto.password, resetToken.user.passwordHash)) {
+      throw new BadRequestException(
+        "New password must be different from your current password",
+      );
+    }
+
     const passwordHash = await this.hashPassword(dto.password);
 
     await this.prisma.$transaction([
