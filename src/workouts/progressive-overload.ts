@@ -46,7 +46,7 @@ export function meetsProgressionTarget(
   return (
     targets.length > 0 &&
     current.length >= targets.length &&
-    targets.every((target, index) => {
+    targets.some((target, index) => {
       const set = current[index];
       return (
         set.weight >= target.targetWeight && set.reps >= target.targetReps
