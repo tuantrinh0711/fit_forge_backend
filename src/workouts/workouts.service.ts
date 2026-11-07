@@ -74,7 +74,7 @@ export class WorkoutsService {
         exerciseId: String(exerciseId),
         exerciseName: session.name,
         weekStart: weekStart.toISOString(),
-        previousSessionAt: session.sets.at(-1)?.createdAt.toISOString(),
+        previousSessionAt: session.workout.createdAt.toISOString(),
         sets: recommendNextSets(session.sets),
       }),
     );
@@ -246,12 +246,12 @@ export class WorkoutsService {
   private findExerciseSessions(userId: string, start: Date, end: Date) {
     return this.prisma.workoutExercise.findMany({
       where: {
-        workout: { is: { userId } },
-        sets: { some: { createdAt: { gte: start, lt: end } } },
+        workout: { is: { userId, createdAt: { gte: start, lt: end } } },
+        sets: { some: {} },
       },
       include: {
-        sets: {
-          where: { createdAt: { gte: start, lt: end } },
+        workout: { select: { createdAt: true } }, sets: {
+          where: {},
           orderBy: [{ createdAt: "asc" }, { id: "asc" }],
         },
       },
@@ -259,15 +259,15 @@ export class WorkoutsService {
   }
 
   private latestSessionsByExercise<T extends {
-    exerciseId: number;
+    exerciseId: number; workout: { createdAt: Date };
     sets: { createdAt: Date }[];
   }>(sessions: T[]) {
     const latest = new Map<number, T>();
     for (const session of sessions) {
       if (session.sets.length === 0) continue;
       const current = latest.get(session.exerciseId);
-      const lastSetAt = session.sets.at(-1)!.createdAt;
-      const currentLastSetAt = current?.sets.at(-1)?.createdAt;
+      const lastSetAt = session.workout.createdAt;
+      const currentLastSetAt = current?.workout.createdAt;
       if (!currentLastSetAt || lastSetAt > currentLastSetAt) {
         latest.set(session.exerciseId, session);
       }
