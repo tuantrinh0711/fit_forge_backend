@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,10 +8,12 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Patch,
   Req,
   UseGuards,
 } from "@nestjs/common";
+import { ApiOperation, ApiQuery } from "@nestjs/swagger";
 import { AddExerciseDto } from "./dto/add-exercise.dto";
 import { Request } from "express";
 import { AddSetDto } from "./dto/add-set.dto";
@@ -31,6 +34,29 @@ export class WorkoutsController {
   @Get()
   findAll() {
     return this.workoutsService.findAll();
+  }
+
+  @Get("progression/weekly")
+  @ApiOperation({ summary: "Get a user's weekly progressive overload targets" })
+  @ApiQuery({
+    name: "weekStart",
+    required: true,
+    type: String,
+    description: "ISO timestamp for the start of the user's current calendar week.",
+  })
+  @UseGuards(AuthGuard)
+  getWeeklyProgression(
+    @Query("weekStart") weekStart: string,
+    @Req() request: Request & { user?: { id?: string } },
+  ) {
+    const userId = request.user?.id;
+    const parsedWeekStart = new Date(weekStart);
+    if (!userId) throw new BadRequestException("A user is required");
+    if (!weekStart || !Number.isFinite(parsedWeekStart.getTime())) {
+      throw new BadRequestException("weekStart must be a valid ISO timestamp");
+    }
+
+    return this.workoutsService.getWeeklyProgression(userId, parsedWeekStart);
   }
 
   @Get(":id")
