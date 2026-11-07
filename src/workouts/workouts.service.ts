@@ -10,6 +10,10 @@ import { AddExerciseDto } from "./dto/add-exercise.dto";
 import { AddSetDto } from "./dto/add-set.dto";
 import { CreateWorkoutDto } from "./dto/create-workout.dto";
 import { UpdateSetDto } from "./dto/update-set.dto";
+import {
+  meetsProgressionTarget,
+  recommendNextSets,
+} from "./progressive-overload";
 
 const workoutInclude = {
   exercises: {
@@ -53,6 +57,57 @@ export class WorkoutsService {
     }
 
     return workout;
+  }
+
+  async getWeeklyProgression(userId: string, weekStart: Date) {
+    const currentWeekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const previousWeekStart = new Date(weekStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const [previousSessions, currentSessions] = await Promise.all([
+      this.findExerciseSessions(userId, previousWeekStart, weekStart),
+      this.findExerciseSessions(userId, weekStart, currentWeekEnd),
+    ]);
+
+    const previousByExercise = this.latestSessionsByExercise(previousSessions);
+    const currentByExercise = this.latestSessionsByExercise(currentSessions);
+    const recommendations = [...previousByExercise.entries()].map(
+      ([exerciseId, session]) => ({
+        exerciseId: String(exerciseId),
+        exerciseName: session.name,
+        weekStart: weekStart.toISOString(),
+        previousSessionAt: session.sets.at(-1)?.createdAt.toISOString(),
+        sets: recommendNextSets(session.sets),
+      }),
+    );
+
+    let eligibleExerciseCount = 0;
+    let achievedExerciseCount = 0;
+    for (const [exerciseId, baseline] of previousByExercise) {
+      const current = currentByExercise.get(exerciseId);
+      if (!current || current.sets.length < baseline.sets.length) continue;
+
+      eligibleExerciseCount += 1;
+      if (
+        meetsProgressionTarget(
+          current.sets,
+          recommendNextSets(baseline.sets),
+        )
+      ) {
+        achievedExerciseCount += 1;
+      }
+    }
+
+    return {
+      weekStart: weekStart.toISOString(),
+      recommendations,
+      weeklySummary: {
+        achievedExerciseCount,
+        eligibleExerciseCount,
+        ratePercent:
+          eligibleExerciseCount === 0
+            ? null
+            : Math.round((achievedExerciseCount / eligibleExerciseCount) * 100),
+      },
+    };
   }
 
   async addExercise(workoutId: string, dto: AddExerciseDto) {
@@ -186,5 +241,37 @@ export class WorkoutsService {
     if (count === 0) {
       throw new NotFoundException(`Workout ${id} was not found`);
     }
+  }
+
+  private findExerciseSessions(userId: string, start: Date, end: Date) {
+    return this.prisma.workoutExercise.findMany({
+      where: {
+        workout: { is: { userId } },
+        sets: { some: { createdAt: { gte: start, lt: end } } },
+      },
+      include: {
+        sets: {
+          where: { createdAt: { gte: start, lt: end } },
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        },
+      },
+    });
+  }
+
+  private latestSessionsByExercise<T extends {
+    exerciseId: number;
+    sets: { createdAt: Date }[];
+  }>(sessions: T[]) {
+    const latest = new Map<number, T>();
+    for (const session of sessions) {
+      if (session.sets.length === 0) continue;
+      const current = latest.get(session.exerciseId);
+      const lastSetAt = session.sets.at(-1)!.createdAt;
+      const currentLastSetAt = current?.sets.at(-1)?.createdAt;
+      if (!currentLastSetAt || lastSetAt > currentLastSetAt) {
+        latest.set(session.exerciseId, session);
+      }
+    }
+    return latest;
   }
 }
